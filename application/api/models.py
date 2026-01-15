@@ -22,9 +22,6 @@ class UserResult(models.Model):
     result = models.ForeignKey(Result, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ['user', 'result']
-
     def __str__(self):
         return f"{self.user.username} - {self.result.id}"
 
@@ -52,3 +49,4 @@ class Repository():
         except Result.DoesNotExist:
             return None
     
+
