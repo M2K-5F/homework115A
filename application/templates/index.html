@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Калькулятор групп сотрудников</h1>
+
+{% if not user.is_authenticated %}
+    <div class="error">
+        <p>Для расчетов нужно <a href="/login/">войти</a></p>
+    </div>
+{% endif %}
+
+<div class="form-group">
+    <label for="arrayInput">Введите массив руководителей:</label><br>
+    <textarea id="arrayInput" rows="3" cols="50" 
+              placeholder="-1, 0, 1, 2" 
+              {% if not user.is_authenticated %}disabled{% endif %}></textarea>
+</div>
+
+<div class="form-group">
+    <button onclick="calculateGroups()" 
+            {% if not user.is_authenticated %}disabled{% endif %}>
+        Рассчитать
+    </button>
+</div>
+
+<div id="result"></div>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        input, textarea, button { padding: 8px; margin: 5px 0; }
+        .result { margin: 20px 0; padding: 15px; background: #f5f5f5; }
+        .error { color: red; }
+        .success { color: green; }
+        nav { margin-bottom: 30px; }
+        nav a { margin-right: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Главная</a>
+            {% if user.is_authenticated %}
+                <span>Пользователь: {{ user.username }}!</span>
+                <a href="/logout/">Выйти</a>
+            {% else %}
+                <a href="/login/">Войти</a>
+            {% endif %}
+        </nav>
+        
+        {% block content %}{% endblock %}
+    </div>
+    
+    <script>
+    async function calculateGroups() {
+        const input = document.getElementById('arrayInput').value;
+        const resultDiv = document.getElementById('result');
+        
+        try {
+            const array = input.split(',').map(x => {
+                const num = parseInt(x.trim());
+                return isNaN(num) ? null : num;
+            });
+            
+            if (array.some(x => x === null)) {
+                throw new Error('Введите числа через запятую');
+            }
+            
+            const response = await fetch('/calculate/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include', 
+                body: JSON.stringify({array: array})
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h3>Результат: ${data.result} групп</h3>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="error">Ошибка: ${data.error || data.detail}</div>`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
+        }
+    }
+    </script>
+</body>
+</html>
